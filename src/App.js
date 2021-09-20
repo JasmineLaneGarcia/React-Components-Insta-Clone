@@ -5,7 +5,8 @@
 */
 
 // Import the state hook
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import axios from 'axios';
 // Import the Posts (plural!) and SearchBar components, since they are used inside App component
 
 import Posts from './components/Posts/Posts';
@@ -16,6 +17,21 @@ import dummyData from './dummy-data'
 import './App.css';
 
 const App = () => {
+
+  const [nasaData, setNasaData] = useState([])
+
+  useEffect(() => {
+    axios
+    .get('https://api.nasa.gov/planetary/apod?api_key=9O0dOJ5Ji5xvsf6jJOY8PZEj4JluJGOYy8fpObgZ')
+    .then(res => {
+      console.log(res.data);
+      setNasaData(res.data)
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }, [])
+
   // Create a state called `posts` to hold the array of post objects, **initializing to dummyData**.
   // This state is the source of truth for the data inside the app. You won't be needing dummyData anymore.
   // To make the search bar work (which is stretch) we'd need another state to hold the search term.
@@ -33,12 +49,15 @@ const App = () => {
         - if the `id` of the post matches `postId`, return a new post object with the desired values (use the spread operator).
         - otherwise just return the post object unchanged.
      */
-    setPost(posts.map(post => 
-      post.id === postId ? {...post, likes: post.likes + 1} : post
-    ))
+    setPost(posts.map(post => {
+      if (post.id === postId){ 
+        return {...post, likes: post.likes + 1}
+      }
+      return post
+    }))
+  };
 
-    }
-    return (
+  return (
     <div className='App'>
       {/* Add SearchBar and Posts here to render them */}
       <SearchBar/> 
@@ -48,5 +67,6 @@ const App = () => {
   );
 };
 
-
+  
 export default App;
+  
